@@ -36,7 +36,6 @@ padding = 20
 canvas_width = ((hex_across - 1) * hex_width) + (2 * padding)
 canvas_height = (hex_tall * hex_height) + (2 * padding)
 
-
 # Let's try to draw the original Bit Badge.
 im = Image.new(mode='RGB',
                size=(int(canvas_width), int(canvas_height)),
@@ -97,7 +96,6 @@ for space in spaces:
     draw_hexagon(space, colour)
 
 im.save('./demo.png')
-
 
 all_permutations = calculate_permutations(len(spaces), len(colours))
 print(f"With {len(colours)} colours and {len(spaces)} spaces, there are {all_permutations:,} total permutations.")

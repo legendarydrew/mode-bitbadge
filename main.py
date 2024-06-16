@@ -79,8 +79,28 @@ def draw_hexagon(space, hex_colour):
     draw.polygon(tuple(points), fill=hex_colour, outline=(20, 20, 30), width=3)
 
 
+def calculate_permutations(space_count, colour_count, use_all_colours=False):
+    if use_all_colours:
+        rs = space_count
+        perms = 0
+        for i in range(1, colour_count + 1):
+            perms += math.pow(i, rs)
+            rs -= 1
+        perms += math.pow(colour_count, space_count - colour_count)
+        return int(perms)
+    else:
+        return int(math.pow(colour_count, space_count))
+
+
 for space in spaces:
     colour = colours[int(random.random() * len(colours))]
     draw_hexagon(space, colour)
 
 im.save('./demo.png')
+
+
+all_permutations = calculate_permutations(len(spaces), len(colours))
+print(f"With {len(colours)} colours and {len(spaces)} spaces, there are {all_permutations:,} total permutations.")
+
+inclusive_permutations = calculate_permutations(len(spaces), len(colours), True)
+print(f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")

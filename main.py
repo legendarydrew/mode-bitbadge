@@ -3,6 +3,7 @@ A script for generating every permutation of SilentMode's Bit Badge
 for a defined list of colours.
 """
 import math
+import random
 
 from PIL import Image, ImageDraw
 
@@ -20,6 +21,7 @@ hex_side_length = 30
 
 # Calculate the dimensions of the hexagon, used for positioning and image size.
 # We can use trigonometry: tan(theta) = opposite / adjacent. (Damn, I'm rusty.)
+# https://www.bbc.co.uk/bitesize/topics/z93rkqt/articles/z9pd239#zq7b9ty
 HEX_ANGLE = 360 / 6
 TAN_HEX_ANGLE = math.tan(HEX_ANGLE * (math.pi / 180))
 hex_height = 2 * TAN_HEX_ANGLE * (hex_side_length / 2)
@@ -69,8 +71,16 @@ def get_hexagon_points(x, y, side_length):
     return tuple(_points)
 
 
-for space in spaces:
+def draw_hexagon(space, hex_colour):
+    global hex_side_length
     points = get_hexagon_points(space[0], space[1], hex_side_length)
-    draw.polygon(tuple(points), fill=(200, 280, 10), outline=(20, 20, 30), width=3)
+    if not hex_colour is str:
+        hex_colour = hex(hex_colour).replace('0x', '#')
+    draw.polygon(tuple(points), fill=hex_colour, outline=(20, 20, 30), width=3)
+
+
+for space in spaces:
+    colour = colours[int(random.random() * len(colours))]
+    draw_hexagon(space, colour)
 
 im.save('./demo.png')

@@ -16,7 +16,7 @@ colours = [
     '#11151C',  # SilentMode Black
     '#600587',  # SilentMode Purple
     '#F2F3F2',  # SilentMode White
-    '#F5CD2F'  # SilentMode Yellow
+    '#F5CD2F',  # SilentMode Yellow
 ]
 
 # A hexagon...
@@ -97,3 +97,6 @@ inclusive_permutations = Permutations.calculate(space_count=len(spaces),
                                                 colour_count=len(colours),
                                                 use_all_colours=True)
 print(f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")
+
+# As a sadistic challenge: how many individual cells would you have to produce
+# for each colour, if you were going to create every single permutation?

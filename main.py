@@ -4,78 +4,106 @@ for a defined list of colours.
 """
 import math
 import random
-
 from PIL import Image, ImageDraw
 
+from modules.hexagon import Hexagon
+
 colours = [
-    0x2B59C3,  # SilentMode Blue
-    0x49506F,  # SilentMode Grey
-    0x11151C,  # SilentMode Black
-    0x600587,  # SilentMode Purple
-    0xF2F3F2,  # SilentMode White
-    0xF5CD2F  # SilentMode Yellow
+    '#2B59C3',  # SilentMode Blue
+    '#49506F',  # SilentMode Grey
+    '#11151C',  # SilentMode Black
+    '#600587',  # SilentMode Purple
+    '#F2F3F2',  # SilentMode White
+    '#F5CD2F'  # SilentMode Yellow
 ]
 
 # A hexagon...
 hex_side_length = 30
+hex_edge_width = 2
 
-# Calculate the dimensions of the hexagon, used for positioning and image size.
-# We can use trigonometry: tan(theta) = opposite / adjacent. (Damn, I'm rusty.)
-# https://www.bbc.co.uk/bitesize/topics/z93rkqt/articles/z9pd239#zq7b9ty
-HEX_ANGLE = 360 / 6
-TAN_HEX_ANGLE = math.tan(HEX_ANGLE * (math.pi / 180))
-hex_height = 2 * TAN_HEX_ANGLE * (hex_side_length / 2)
-hex_x_increment = hex_height / TAN_HEX_ANGLE  # adjacent = opposite / tan(theta)
-hex_y_increment = hex_height / 2
-hex_width = 2 * hex_x_increment + hex_side_length
+image_padding = 10
 
-hex_across = 3
-hex_tall = 4
+"""
+Here's how we're defining the hexagonal grid:
 
-padding = 20
-canvas_width = ((hex_across - 1) * hex_width) + (2 * padding)
-canvas_height = (hex_tall * hex_height) + (2 * padding)
+   0 1 2 3 4         0 1 2 3 4
+------------      ------------
+ 0 - - x - -       0 - - x - -
+ 1 - x - x -       1 - x - x -
+ 2 - - x - -       2 x - x - x
+ 3 - x - x -       3 - x - x -
+ 4 - - x - -       4 x - x - x
+ 5 - x - x -       5 - x - x -
+ 6 - - x - -       6 - - x - -
+Original base       Wide base
+"""
+spaces = (
+    (2, 0),
+    (1, 1),
+    (3, 1),
+    # # (0, 2),
+    (2, 2),
+    # # (4, 2),
+    (1, 3),
+    (3, 3),
+    # # (0, 4),
+    (2, 4),
+    # # (4, 4),
+    (1, 5),
+    (3, 5),
+    (2, 6),
+)
 
-# Let's try to draw the original Bit Badge.
+# Calculate the coordinates of each hexagon for each of the defined spaces.
+# The coordinates represent the centre of each hexagon.
+min_x = None
+min_y = None
+max_x = None
+max_y = None
+coordinates = []
+hex_dimensions = Hexagon.dimensions(hex_side_length)
+
+for space in spaces:
+    x, y = space
+    min_x = min(min_x, x) if min_x is not None else x
+    min_y = min(min_y, y) if min_y is not None else y
+    max_x = max(max_x, x) if max_x is not None else x
+    max_y = max(max_y, y) if max_y is not None else y
+    hx = (hex_dimensions.width / 2) + (x * hex_dimensions.increment['x'])
+    hy = (hex_dimensions.height / 2) + (y * hex_dimensions.increment['y'])
+    coordinates.append([hx, hy])
+
+# Determine the canvas dimensions.
+hex_across = max(1, max_x - min_x + 1)
+hex_down = max(1, int(max_y - min_y / 2) + 1)
+canvas_width = int((hex_across * hex_side_length) + ((hex_across + 1) * hex_dimensions.point))
+canvas_height = int((hex_down + 1) * hex_dimensions.increment['y'])
+
+# canvas_width += 2 * hex_edge_width
+# canvas_height += 2 * hex_edge_width
+
+print("Based on the defined spaces,")
+print(f"the hexagonal grid is {hex_across} spaces wide and {hex_down} spaces tall.")
+print(f"That gives us a canvas of {canvas_width} x {canvas_height} pixels (before padding).")
+
+# Shift the coordinates if necessary, so they are aligned with the top left
+# of the canvas.
+coordinates = [[
+    c[0] - min_x * hex_dimensions.increment['x'] + image_padding,
+    c[1] - min_y * hex_dimensions.increment['y'] + image_padding
+] for c in coordinates]
+
+# Create the canvas.
+canvas_width += 2 * image_padding
+canvas_height += 2 * image_padding + hex_edge_width
+
 im = Image.new(mode='RGB',
-               size=(int(canvas_width), int(canvas_height)),
+               size=(canvas_width, canvas_height),
                color=(200, 200, 200))
 draw = ImageDraw.Draw(im)
 
-mx = canvas_width / 2
-spaces = (
-    (mx, padding + hex_height / 2),
-    (mx - hex_width / 2, padding + hex_y_increment + hex_height / 2),
-    (mx, padding + hex_height + (hex_height / 2)),
-    (mx + hex_width / 2, padding + hex_y_increment + hex_height / 2),
-    (mx - hex_width / 2, padding + hex_y_increment + hex_height + hex_height / 2),
-    (mx, padding + (2 * hex_height) + (hex_height / 2)),
-    (mx + hex_width / 2, padding + hex_y_increment + hex_height + hex_height / 2),
-    (mx - hex_width / 2, padding + hex_y_increment + (2 * hex_height) + hex_height / 2),
-    (mx, padding + (3 * hex_height) + (hex_height / 2)),
-    (mx + hex_width / 2, padding + hex_y_increment + (2 * hex_height) + hex_height / 2),
-)
-
-
-def get_hexagon_points(x, y, side_length):
-    angle = 0
-    _points = []
-    hex_angle = 360 / 6
-    while angle < 360:
-        angle_to_radians = (90 + angle) * math.pi / 180
-        px = x + math.sin(angle_to_radians) * side_length
-        py = y + math.cos(angle_to_radians) * side_length
-        _points.append((px, py))
-        angle += hex_angle
-    return tuple(_points)
-
-
-def draw_hexagon(space, hex_colour):
-    global hex_side_length
-    points = get_hexagon_points(space[0], space[1], hex_side_length)
-    if not hex_colour is str:
-        hex_colour = hex(hex_colour).replace('0x', '#')
-    draw.polygon(tuple(points), fill=hex_colour, outline=(20, 20, 30), width=3)
+# Create the hexagons.
+hexagons = tuple([Hexagon(c[0], c[1], hex_side_length) for c in coordinates])
 
 
 def calculate_permutations(space_count, colour_count, use_all_colours=False):
@@ -91,14 +119,18 @@ def calculate_permutations(space_count, colour_count, use_all_colours=False):
         return int(math.pow(colour_count, space_count))
 
 
-for space in spaces:
+for hexagon in hexagons:
     colour = colours[int(random.random() * len(colours))]
-    draw_hexagon(space, colour)
+    hexagon.draw(draw_handle=draw, fill_colour=colour, edge_width=hex_edge_width)
 
 im.save('./demo.png')
 
+print("Done.")
+
+"""
 all_permutations = calculate_permutations(len(spaces), len(colours))
 print(f"With {len(colours)} colours and {len(spaces)} spaces, there are {all_permutations:,} total permutations.")
 
 inclusive_permutations = calculate_permutations(len(spaces), len(colours), True)
 print(f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")
+"""

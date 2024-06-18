@@ -9,14 +9,16 @@ from modules.contact_sheet import ContactSheet
 
 
 def main():
+    spaces = Base.ORIGINAL
     colours = [
         '#2B59C3',  # SilentMode Blue
         '#49506F',  # SilentMode Grey
-        '#11151C',  # SilentMode Black
-        '#600587',  # SilentMode Purple
-        '#F2F3F2',  # SilentMode White
-        '#F5CD2F',  # SilentMode Yellow
+        # '#11151C',  # SilentMode Black
+        # '#600587',  # SilentMode Purple
+        # '#F2F3F2',  # SilentMode White
+        # '#F5CD2F',  # SilentMode Yellow
     ]
+    use_all_colours = True
 
     """
     What I'd like to do next:
@@ -24,25 +26,50 @@ def main():
     - display the permutation count.
     - option to just display the permutation count.
     - option to render a demo image.
-    - iterate through permutations.
     - display a progress bar.
-    - create contact sheets instead of individual images (define images across/down).
-    - transparent background colour for Canvas, configurable background colour for the sheets.
     - add a [copyright] notice to contact sheets.
     - generate a video? (á la mode-dotperms)
     """
-    c = 0
-    sheet = ContactSheet(items_across=4, items_down=3, title="Contact Sheet")
-    for i in range(20):
-        canvas = Canvas(spaces=Base.ORIGINAL)
-        canvas.draw(colours=colours)
-        sheet.add(canvas)
-        del canvas
-        if sheet.is_full():
-            sheet.save(f'sheet-{c}.png')
-            sheet.reset()
-            c += 1
-    sheet.save(f'sheet-{c}.png')
+    space_colour_ids = [0 for _ in range(len(spaces))]
+
+    def increment_indices():
+        for _i in range(len(space_colour_ids)):
+            space_colour_ids[_i] += 1
+            if space_colour_ids[_i] >= len(colours):
+                space_colour_ids[_i] = 0
+            else:
+                return True
+        return False
+
+    def check_indices():
+        if use_all_colours:
+            for _i in range(len(colours)):
+                if _i not in space_colour_ids:
+                    return False
+        return True
+
+    sheet = ContactSheet(items_across=10, items_down=6, title="Contact Sheet")
+    sheet_index = 0
+    while True:
+        if check_indices():
+            space_colour_hex = [colours[i] for i in space_colour_ids]
+
+            canvas = Canvas(spaces=Base.ORIGINAL)
+            canvas.draw(colours=space_colour_hex)
+            sheet.add(canvas)
+            del canvas
+
+            if sheet.is_full():
+                sheet.save(f'sheet-{sheet_index}.png')
+                sheet.reset()
+                sheet_index += 1
+
+        if not increment_indices():
+            break
+
+    # Save the last contact sheet.
+    # (This shouldn't save anything if it is empty.)
+    sheet.save(f'sheet-{sheet_index}.png')
 
     print("Done.")
 

@@ -21,6 +21,10 @@ class Canvas:
         self._create_canvas()
 
     def image(self):
+        """
+        Returns the image for this canvas.
+        :return:
+        """
         return self._im
 
     def _convert_spaces(self, spaces: list):
@@ -73,10 +77,7 @@ class Canvas:
                              size=(self.width, self.height))
         self._draw_handle = ImageDraw.Draw(self._im)
 
-    def draw(self, colours: list):
-        # TODO clear the canvas.
-        # TODO colours would be provided as a list of hex codes to use for each Hexagon.
-        for hexagon in self.hexagons:
-            colour = colours[int(random.random() * len(colours))]
-            hexagon.draw(draw_handle=self._draw_handle, fill_colour=colour, edge_width=self.outline_width)
-        # self._im.save('./demo.png')
+    def draw(self, colours: list[str]):
+        for index, hexagon in enumerate(self.hexagons):
+            fill_colour = colours[index]
+            hexagon.draw(draw_handle=self._draw_handle, fill_colour=fill_colour, edge_width=self.outline_width)

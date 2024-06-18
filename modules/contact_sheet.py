@@ -44,10 +44,10 @@ class ContactSheet:
         :param filename:
         :return:
         """
-        # TODO Add the title.
-        # TODO Add a copyright notice at the bottom of the image.
-        self._canvas.save(filename)
-        pass
+        if self._canvas is not None:
+            # TODO Add the title.
+            # TODO Add a copyright notice at the bottom of the image.
+            self._canvas.save(filename)
 
     def reset(self):
         """

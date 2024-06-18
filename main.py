@@ -31,13 +31,18 @@ def main():
     - add a [copyright] notice to contact sheets.
     - generate a video? (á la mode-dotperms)
     """
+    c = 0
     sheet = ContactSheet(items_across=4, items_down=3, title="Contact Sheet")
-    for i in range(9):
+    for i in range(20):
         canvas = Canvas(spaces=Base.ORIGINAL)
         canvas.draw(colours=colours)
         sheet.add(canvas)
         del canvas
-    sheet.save('flawless-victory.png')
+        if sheet.is_full():
+            sheet.save(f'sheet-{c}.png')
+            sheet.reset()
+            c += 1
+    sheet.save(f'sheet-{c}.png')
 
     print("Done.")
 

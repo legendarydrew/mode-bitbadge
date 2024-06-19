@@ -2,10 +2,13 @@
 A script for generating every permutation of SilentMode's Bit Badge
 for a defined list of colours.
 """
+import time
 
+from alive_progress import alive_bar
 from modules.canvas import Canvas
 from modules.base import Base
 from modules.contact_sheet import ContactSheet
+from modules.permutations import Permutations
 
 
 def main():
@@ -18,11 +21,10 @@ def main():
         '#F2F3F2',  # SilentMode White
         '#F5CD2F',  # SilentMode Yellow
     ]
-    use_all_colours = True
+    use_all_colours = False
 
     """
     What I'd like to do next:
-    - choose between use all colours or all permutations.
     - display the permutation count.
     - option to just display the permutation count.
     - option to render a demo image.
@@ -32,10 +34,20 @@ def main():
     """
     space_colour_ids = [0 for _ in range(len(spaces))]
 
+    spaces_count = len(spaces)
+    colours_count = len(colours)
+    permutation_count = Permutations.calculate(space_count=spaces_count,
+                                               colour_count=colours_count,
+                                               use_all_colours=use_all_colours)
+    print(f"Number of spaces: {spaces_count:,}")
+    print(f"Number of colours: {colours_count:,}")
+    print("Colour usage: " + ('one of each colour' if use_all_colours else 'any combination'))
+    print(f"Total permutations: {permutation_count:,}\n")
+
     def increment_indices():
         for _i in range(len(space_colour_ids)):
             space_colour_ids[_i] += 1
-            if space_colour_ids[_i] >= len(colours):
+            if space_colour_ids[_i] >= colours_count:
                 space_colour_ids[_i] = 0
             else:
                 return True
@@ -43,33 +55,42 @@ def main():
 
     def check_indices():
         if use_all_colours:
-            for _i in range(len(colours)):
+            for _i in range(colours_count):
                 if _i not in space_colour_ids:
                     return False
         return True
 
     sheet = ContactSheet(items_across=10, items_down=6, title="Contact Sheet")
     sheet_index = 0
-    while True:
-        if check_indices():
-            space_colour_hex = [colours[i] for i in space_colour_ids]
 
-            canvas = Canvas(spaces=Base.ORIGINAL)
-            canvas.draw(colours=space_colour_hex)
-            sheet.add(canvas)
-            del canvas
+    with alive_bar(total=permutation_count) as bar:
+        while True:
+            if check_indices():
 
-            if sheet.is_full():
-                sheet.save(f'sheet-{sheet_index}.png')
-                sheet.reset()
-                sheet_index += 1
+                # Update the progress bar.
+                # If you can't see the bar when running this in PyCharm:
+                # https://github.com/rsalmei/alive-progress#forcing-animations-on-pycharm-jupyter-etc
+                time.sleep(0.01)
+                bar()
 
-        if not increment_indices():
-            break
+                space_colour_hex = [colours[i] for i in space_colour_ids]
+
+                canvas = Canvas(spaces)
+                canvas.draw(colours=space_colour_hex)
+                sheet.add(canvas)
+                del canvas
+
+                if sheet.is_full():
+                    sheet.save(f'output/sheet-{sheet_index}.png')
+                    sheet.reset()
+                    sheet_index += 1
+
+            if not increment_indices():
+                break
 
     # Save the last contact sheet.
     # (This shouldn't save anything if it is empty.)
-    sheet.save(f'sheet-{sheet_index}.png')
+    sheet.save(f'./output/sheet-{sheet_index}.png')
 
     print("Done.")
 

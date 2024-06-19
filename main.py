@@ -14,11 +14,11 @@ from modules.permutations import Permutations
 def main():
     spaces = Base.TEST
     colours = [
-        '#2B59C3',  # SilentMode Blue
-        '#49506F',  # SilentMode Grey
+        # '#2B59C3',  # SilentMode Blue
+        # '#49506F',  # SilentMode Grey
         '#11151C',  # SilentMode Black
-        '#600587',  # SilentMode Purple
-        '#F2F3F2',  # SilentMode White
+        # '#600587',  # SilentMode Purple
+        # '#F2F3F2',  # SilentMode White
         '#F5CD2F',  # SilentMode Yellow
     ]
     use_all_colours = False
@@ -57,7 +57,7 @@ def main():
                     return False
         return True
 
-    sheet = ContactSheet(items_across=10, items_down=6, title="Contact Sheet")
+    sheet = ContactSheet(items_across=10, items_down=6)
     sheet_index = 0
 
     with alive_bar(total=permutation_count) as bar:
@@ -79,8 +79,7 @@ def main():
 
                 if sheet.is_full():
                     sheet_index += 1
-                    sheet.title = f"Contact Sheet {sheet_index}"
-                    sheet.save(f'output/sheet-{sheet_index}.png')
+                    sheet.save(f'output/sheet-{sheet_index}.png', number=sheet_index)
                     sheet.reset()
 
             if not increment_indices():
@@ -88,8 +87,7 @@ def main():
 
     # Save the last contact sheet.
     # (This shouldn't save anything if it is empty.)
-    sheet.title = f"Contact Sheet {sheet_index + 1}"
-    if sheet.save(f'./output/sheet-{sheet_index + 1}.png'):
+    if sheet.save(f'./output/sheet-{sheet_index + 1}.png', number=sheet_index + 1):
         sheet_index += 1
 
     if sheet_index == 0:

@@ -1,4 +1,3 @@
-import random
 from PIL import Image, ImageDraw
 from modules.hexagon import Hexagon
 
@@ -9,7 +8,7 @@ class Canvas:
 
     # TODO ability to configure these on creation.
     margin = 10
-    hexagon_side_length = 18
+    hexagon_side_length = 9
     outline_width = 2
 
     hexagons = None

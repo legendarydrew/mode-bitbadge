@@ -25,11 +25,8 @@ def main():
 
     """
     What I'd like to do next:
-    - display the permutation count.
     - option to just display the permutation count.
     - option to render a demo image.
-    - display a progress bar.
-    - add a [copyright] notice to contact sheets.
     - generate a video? (á la mode-dotperms)
     """
     space_colour_ids = [0 for _ in range(len(spaces))]
@@ -81,16 +78,26 @@ def main():
                 del canvas
 
                 if sheet.is_full():
+                    sheet_index += 1
+                    sheet.title = f"Contact Sheet {sheet_index}"
                     sheet.save(f'output/sheet-{sheet_index}.png')
                     sheet.reset()
-                    sheet_index += 1
 
             if not increment_indices():
                 break
 
     # Save the last contact sheet.
     # (This shouldn't save anything if it is empty.)
-    sheet.save(f'./output/sheet-{sheet_index}.png')
+    sheet.title = f"Contact Sheet {sheet_index + 1}"
+    if sheet.save(f'./output/sheet-{sheet_index + 1}.png'):
+        sheet_index += 1
+
+    if sheet_index == 0:
+        print("No contact sheets were generated.")
+    elif sheet_index == 1:
+        print("One contact sheet was generated.")
+    else:
+        print(f"{sheet_index:,} contact sheets were generated.")
 
     print("Done.")
 

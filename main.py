@@ -17,13 +17,6 @@ from modules.base import Base
 from modules.contact_sheet import ContactSheet
 from modules.permutations import Permutations
 
-"""
-What I'd like to do next:
-- option to just display the permutation count.
-- option to render a demo image.
-- generate a video? (á la mode-dotperms)
-"""
-
 
 def main():
     # Settings here...

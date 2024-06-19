@@ -9,14 +9,14 @@ from modules.contact_sheet import ContactSheet
 
 
 def main():
-    spaces = Base.ORIGINAL
+    spaces = Base.TEST
     colours = [
         '#2B59C3',  # SilentMode Blue
         '#49506F',  # SilentMode Grey
-        # '#11151C',  # SilentMode Black
-        # '#600587',  # SilentMode Purple
-        # '#F2F3F2',  # SilentMode White
-        # '#F5CD2F',  # SilentMode Yellow
+        '#11151C',  # SilentMode Black
+        '#600587',  # SilentMode Purple
+        '#F2F3F2',  # SilentMode White
+        '#F5CD2F',  # SilentMode Yellow
     ]
     use_all_colours = True
 

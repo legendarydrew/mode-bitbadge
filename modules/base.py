@@ -18,6 +18,13 @@ class Base:
     Original base       Wide base
     """
 
+    TEST = (
+        (1, 0),
+        (0, 1),
+        (2, 1),
+        (1, 2)
+    )
+
     ORIGINAL = (
         (2, 0),
         (1, 1),

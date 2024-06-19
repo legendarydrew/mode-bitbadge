@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 
-from modules.canvas import Canvas
+from modules.grid import Grid
 from modules.config import Config
 
 
@@ -13,7 +13,7 @@ class ContactSheet:
         self.items_across = items_across
         self.items_down = items_down
 
-    def add(self, canvas: Canvas):
+    def add(self, canvas: Grid):
         # If adding the first image, create a canvas measuring (across x width) by (down x height).
         image = canvas.image()
         if self._canvas is None:

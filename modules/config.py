@@ -11,3 +11,11 @@ class Config:
     SHEET_FOOTER_TEXT: str = '© Drew Maughan (SilentMode).'
     SHEET_FOOTER_TEXT_SIZE: int = 10
     SHEET_FOOTER_TEXT_COLOUR: str = '#09090A'
+
+    # Hexagon options.
+    HEXAGON_SIDE_LENGTH = 9
+
+    # Hexagon grid options.
+    HEX_GRID_MARGIN: int = 10
+    HEX_GRID_OUTLINE_WIDTH = 2
+    HEX_GRID_OUTLINE_COLOUR: str = '#383838'

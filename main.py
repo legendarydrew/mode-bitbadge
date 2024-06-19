@@ -5,7 +5,7 @@ for a defined list of colours.
 import time
 
 from alive_progress import alive_bar
-from modules.canvas import Canvas
+from modules.grid import Grid
 from modules.base import Base
 from modules.contact_sheet import ContactSheet
 from modules.permutations import Permutations
@@ -72,7 +72,7 @@ def main():
 
                 space_colour_hex = [colours[i] for i in space_colour_ids]
 
-                canvas = Canvas(spaces)
+                canvas = Grid(spaces)
                 canvas.draw(colours=space_colour_hex)
                 sheet.add(canvas)
                 del canvas

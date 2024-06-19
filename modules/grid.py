@@ -1,15 +1,16 @@
 from PIL import Image, ImageDraw
+
+from modules.config import Config
 from modules.hexagon import Hexagon
 
 
-class Canvas:
+class Grid:
+    """
+    A class used to draw the hexagonal grid of a Bit Badge.
+    """
+
     _im = None
     _draw_handle = None
-
-    # TODO ability to configure these on creation.
-    margin = 10
-    hexagon_side_length = 9
-    outline_width = 2
 
     hexagons = None
     hexagons_across = None
@@ -38,7 +39,7 @@ class Canvas:
         max_x = None
         max_y = None
         coordinates = []
-        hex_dimensions = Hexagon.dimensions(self.hexagon_side_length)
+        hex_dimensions = Hexagon.dimensions(Config.HEXAGON_SIDE_LENGTH)
 
         for space in spaces:
             x, y = space
@@ -54,22 +55,22 @@ class Canvas:
         self.hexagons_across = max(1, max_x - min_x + 1)
         self.hexagons_down = max(1, int(max_y - min_y / 2) + 1)
         self.width = int(
-            (self.hexagons_across * self.hexagon_side_length) + ((self.hexagons_across + 1) * hex_dimensions.point))
+            (self.hexagons_across * Config.HEXAGON_SIDE_LENGTH) + ((self.hexagons_across + 1) * hex_dimensions.point))
         self.height = int((self.hexagons_down + 1) * hex_dimensions.increment['y'])
 
         # Add the margin to the canvas dimensions.
-        self.width += 2 * self.margin
-        self.height += 2 * self.margin + self.outline_width
+        self.width += 2 * Config.HEX_GRID_MARGIN
+        self.height += 2 * Config.HEX_GRID_MARGIN + Config.HEX_GRID_OUTLINE_WIDTH
 
         # Shift the coordinates if necessary, so the hexagons are aligned
         # with the top left of the canvas, offset by the margin.
         coordinates = [[
-            c[0] - min_x * hex_dimensions.increment['x'] + self.margin,
-            c[1] - min_y * hex_dimensions.increment['y'] + self.margin
+            c[0] - min_x * hex_dimensions.increment['x'] + Config.HEX_GRID_MARGIN,
+            c[1] - min_y * hex_dimensions.increment['y'] + Config.HEX_GRID_MARGIN
         ] for c in coordinates]
 
         # Create the Hexagon objects.
-        self.hexagons = tuple([Hexagon(c[0], c[1], self.hexagon_side_length) for c in coordinates])
+        self.hexagons = tuple([Hexagon(c[0], c[1], Config.HEXAGON_SIDE_LENGTH) for c in coordinates])
 
     def _create_canvas(self):
         self._im = Image.new(mode='RGBA',
@@ -79,4 +80,7 @@ class Canvas:
     def draw(self, colours: list[str]):
         for index, hexagon in enumerate(self.hexagons):
             fill_colour = colours[index]
-            hexagon.draw(draw_handle=self._draw_handle, fill_colour=fill_colour, edge_width=self.outline_width)
+            hexagon.draw(draw_handle=self._draw_handle,
+                         fill_colour=fill_colour,
+                         edge_colour=Config.HEX_GRID_OUTLINE_COLOUR,
+                         edge_width=Config.HEX_GRID_OUTLINE_WIDTH)

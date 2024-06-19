@@ -2,6 +2,9 @@ import math
 
 
 class Permutations:
+    """
+    A class used for calculating numbers or permutations.
+    """
 
     @staticmethod
     def calculate(space_count: int, colour_count: int, use_all_colours: bool = False):

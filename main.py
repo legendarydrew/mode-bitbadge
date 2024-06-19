@@ -1,6 +1,13 @@
 """
-A script for generating every permutation of SilentMode's Bit Badge
-for a defined list of colours.
+==============================================================================
+  permutateBitBadge
+  A script for generating every permutation of SilentMode's Bit Badge
+  for a defined list of colours.
+  This project follows mode-dotperms: a similar project involving LEGO DOTS.
+==============================================================================
+  developed in 2024 by Drew Maughan (SilentMode)
+  with quite a bit of help!
+==============================================================================
 """
 import time
 
@@ -10,8 +17,16 @@ from modules.base import Base
 from modules.contact_sheet import ContactSheet
 from modules.permutations import Permutations
 
+"""
+What I'd like to do next:
+- option to just display the permutation count.
+- option to render a demo image.
+- generate a video? (á la mode-dotperms)
+"""
+
 
 def main():
+    # Settings here...
     spaces = Base.TEST
     colours = [
         # '#2B59C3',  # SilentMode Blue
@@ -23,96 +38,105 @@ def main():
     ]
     use_all_colours = False
 
-    """
-    What I'd like to do next:
-    - option to just display the permutation count.
-    - option to render a demo image.
-    - generate a video? (á la mode-dotperms)
-    """
-    space_colour_ids = [0 for _ in range(len(spaces))]
+    # ---------------------------------------------------------
 
-    spaces_count = len(spaces)
-    colours_count = len(colours)
-    permutation_count = Permutations.calculate(space_count=spaces_count,
-                                               colour_count=colours_count,
-                                               use_all_colours=use_all_colours)
-    print(f"Number of spaces: {spaces_count:,}")
-    print(f"Number of colours: {colours_count:,}")
-    print("Colour usage: " + ('one of each colour' if use_all_colours else 'any combination'))
-    print(f"Total permutations: {permutation_count:,}\n")
+    _space_counter = [0 for _ in range(len(spaces))]  # keeps track of colours for each space.
+    _space_count = len(spaces)
+    _colour_count = len(colours)
+    _permutation_count = Permutations.calculate(space_count=_space_count,
+                                                colour_count=_colour_count,
+                                                use_all_colours=use_all_colours)
+
+    def display_permutations():
+        all_permutations = Permutations.calculate(space_count=_space_count,
+                                                  colour_count=_colour_count,
+                                                  use_all_colours=False)
+        inclusive_permutations = Permutations.calculate(space_count=_space_count,
+                                                        colour_count=_colour_count,
+                                                        use_all_colours=True)
+        print(
+            f"With {len(colours)} colours and {len(spaces)} spaces, there are {all_permutations:,} total permutations.")
+        print(
+            f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")
 
     def increment_indices():
-        for _i in range(len(space_colour_ids)):
-            space_colour_ids[_i] += 1
-            if space_colour_ids[_i] >= colours_count:
-                space_colour_ids[_i] = 0
+        """
+        Increment the space counters to select the next permutation.
+        :return: True if successful, False if the counters have reached the end.
+        """
+        for _i in range(len(_space_counter)):
+            _space_counter[_i] += 1
+            if _space_counter[_i] >= _colour_count:
+                _space_counter[_i] = 0
             else:
                 return True
         return False
 
     def check_indices():
+        """
+        Check whether the space counters are valid.
+        In the case where each colour must appear at least once, this will return
+        False if at least one colour is not represented.
+        :return:
+        """
         if use_all_colours:
-            for _i in range(colours_count):
-                if _i not in space_colour_ids:
+            for _i in range(_colour_count):
+                if _i not in _space_counter:
                     return False
         return True
 
+    # Define the contact sheet.
     sheet = ContactSheet(items_across=10, items_down=6)
-    sheet_index = 0
+    _sheet_index = 0
 
-    with alive_bar(total=permutation_count) as bar:
+    # Generate each permutation as an image, adding them to our contact sheet.
+    print("Generating permutations...")
+    with alive_bar(total=_permutation_count) as bar:
         while True:
             if check_indices():
-
                 # Update the progress bar.
                 # If you can't see the bar when running this in PyCharm:
                 # https://github.com/rsalmei/alive-progress#forcing-animations-on-pycharm-jupyter-etc
                 time.sleep(0.01)
                 bar()
 
-                space_colour_hex = [colours[i] for i in space_colour_ids]
+                # Select the respective colour hex codes for each space.
+                space_colour_hex = [colours[i] for i in _space_counter]
 
+                # Draw the grid, then add it to the contact sheet.
                 canvas = Grid(spaces)
                 canvas.draw(colours=space_colour_hex)
                 sheet.add(canvas)
                 del canvas
 
                 if sheet.is_full():
-                    sheet_index += 1
-                    sheet.save(f'output/sheet-{sheet_index}.png', number=sheet_index)
+                    # Save the contact sheet.
+                    _sheet_index += 1
+                    sheet.save(f'output/sheet-{_sheet_index}.png', number=_sheet_index)
                     sheet.reset()
 
             if not increment_indices():
+                # Attempt to save the contact sheet as-is.
+                # (This shouldn't save anything if it is empty.)
+                if sheet.save(f'./output/sheet-{_sheet_index + 1}.png', number=_sheet_index + 1):
+                    _sheet_index += 1
                 break
 
-    # Save the last contact sheet.
-    # (This shouldn't save anything if it is empty.)
-    if sheet.save(f'./output/sheet-{sheet_index + 1}.png', number=sheet_index + 1):
-        sheet_index += 1
-
-    if sheet_index == 0:
+    # How many contact sheets were generated?
+    if _sheet_index == 0:
         print("No contact sheets were generated.")
-    elif sheet_index == 1:
+    elif _sheet_index == 1:
         print("One contact sheet was generated.")
     else:
-        print(f"{sheet_index:,} contact sheets were generated.")
+        print(f"{_sheet_index:,} contact sheets were generated.")
 
     print("Done.")
 
 
 """
-all_permutations = Permutations.calculate(space_count=len(spaces),
-                                          colour_count=len(colours),
-                                          use_all_colours=False)
-print(f"With {len(colours)} colours and {len(spaces)} spaces, there are {all_permutations:,} total permutations.")
-
-inclusive_permutations = Permutations.calculate(space_count=len(spaces),
-                                                colour_count=len(colours),
-                                                use_all_colours=True)
-print(f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")
-
-# As a sadistic challenge: how many individual cells would you have to produce
-# for each colour, if you were going to create every single permutation?
+# As a sadistic mathematical challenge:
+# how many individual cells would you have to produce for each colour,
+# if you were going to physically create every single permutation?
 """
 
 if __name__ == '__main__':

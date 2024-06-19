@@ -29,14 +29,14 @@ def main():
     # Settings here...
     spaces = Base.TEST
     colours = [
-        # '#2B59C3',  # SilentMode Blue
-        # '#49506F',  # SilentMode Grey
+        '#2B59C3',  # SilentMode Blue
+        '#49506F',  # SilentMode Grey
         '#11151C',  # SilentMode Black
-        # '#600587',  # SilentMode Purple
-        # '#F2F3F2',  # SilentMode White
+        '#600587',  # SilentMode Purple
+        '#F2F3F2',  # SilentMode White
         '#F5CD2F',  # SilentMode Yellow
     ]
-    use_all_colours = False
+    use_all_colours = True
 
     # ---------------------------------------------------------
 
@@ -86,51 +86,54 @@ def main():
         return True
 
     # Define the contact sheet.
-    sheet = ContactSheet(items_across=10, items_down=6)
+    sheet = ContactSheet(items_across=12, items_down=8)
     _sheet_index = 0
 
     # Generate each permutation as an image, adding them to our contact sheet.
     print("Generating permutations...")
-    with alive_bar(total=_permutation_count) as bar:
-        while True:
-            if check_indices():
-                # Update the progress bar.
-                # If you can't see the bar when running this in PyCharm:
-                # https://github.com/rsalmei/alive-progress#forcing-animations-on-pycharm-jupyter-etc
-                time.sleep(0.01)
-                bar()
+    try:
+        with alive_bar(total=_permutation_count) as bar:
+            while True:
+                if check_indices():
+                    # Update the progress bar.
+                    # If you can't see the bar when running this in PyCharm:
+                    # https://github.com/rsalmei/alive-progress#forcing-animations-on-pycharm-jupyter-etc
+                    time.sleep(0.01)
+                    bar()
 
-                # Select the respective colour hex codes for each space.
-                space_colour_hex = [colours[i] for i in _space_counter]
+                    # Select the respective colour hex codes for each space.
+                    space_colour_hex = [colours[i] for i in _space_counter]
 
-                # Draw the grid, then add it to the contact sheet.
-                canvas = Grid(spaces)
-                canvas.draw(colours=space_colour_hex)
-                sheet.add(canvas)
-                del canvas
+                    # Draw the grid, then add it to the contact sheet.
+                    canvas = Grid(spaces)
+                    canvas.draw(colours=space_colour_hex)
+                    sheet.add(canvas)
+                    del canvas
 
-                if sheet.is_full():
-                    # Save the contact sheet.
-                    _sheet_index += 1
-                    sheet.save(f'output/sheet-{_sheet_index}.png', number=_sheet_index)
-                    sheet.reset()
+                    if sheet.is_full():
+                        # Save the contact sheet.
+                        _sheet_index += 1
+                        sheet.save(f'output/sheet-{_sheet_index}.png', number=_sheet_index)
+                        sheet.reset()
 
-            if not increment_indices():
-                # Attempt to save the contact sheet as-is.
-                # (This shouldn't save anything if it is empty.)
-                if sheet.save(f'./output/sheet-{_sheet_index + 1}.png', number=_sheet_index + 1):
-                    _sheet_index += 1
-                break
+                if not increment_indices():
+                    # Attempt to save the contact sheet as-is.
+                    # (This shouldn't save anything if it is empty.)
+                    if sheet.save(f'./output/sheet-{_sheet_index + 1}.png', number=_sheet_index + 1):
+                        _sheet_index += 1
+                    print("Done.")
+                    break
+    except KeyboardInterrupt:
+        print("Stopped...")
 
-    # How many contact sheets were generated?
-    if _sheet_index == 0:
-        print("No contact sheets were generated.")
-    elif _sheet_index == 1:
-        print("One contact sheet was generated.")
-    else:
-        print(f"{_sheet_index:,} contact sheets were generated.")
-
-    print("Done.")
+    finally:
+        # How many contact sheets were generated?
+        if _sheet_index == 0:
+            print("No contact sheets were generated.")
+        elif _sheet_index == 1:
+            print("One contact sheet was generated.")
+        else:
+            print(f"{_sheet_index:,} contact sheets were generated.")
 
 
 """

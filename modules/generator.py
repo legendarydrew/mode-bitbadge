@@ -84,7 +84,8 @@ class Generator:
             self.sheet_dimensions = (self.sheet_dimensions[0], self.sheet_dimensions[0])
         if self.sheet_dimensions[0] < 1 or self.sheet_dimensions[1] < 1:
             raise ValueError('Each sheet dimension must be >= 1.')
-        # TODO check whether the output folder exists.
+        if not os.path.isdir(self.output_folder):
+            raise NotADirectoryError('Output folder does not exist.')
 
     def delete_sheets(self):
         """

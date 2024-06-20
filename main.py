@@ -26,17 +26,18 @@ def get_arguments():
     :return:
     """
     parser = argparse.ArgumentParser("main.py")
-    parser.add_argument("-b", "--base", help="Which Bit Badge base to use.",
+    parser.add_argument("-b", "--base",
+                        help="Which Bit Badge base to use.",
                         type=str,
                         choices=('test', 'original', 'wide'),
                         default='test')
-    parser.add_argument("-c", "--colours", help="Colour hex codes to use for the Bit Badge.",
+    parser.add_argument("-c", "--colours",
+                        help="Colour hex codes to use for the Bit Badge.",
                         nargs="*",
                         type=str)
     parser.add_argument("-a", "--use-all-colours",
-                        help="Whether all colours should be used in each permutation.",
-                        type=bool,
-                        default=False)
+                        action='store_true',
+                        help="All colours should be used at least once in each permutation.")
     parser.add_argument("-t", "--title",
                         help="The title to use on contact sheets.",
                         type=str,
@@ -68,11 +69,11 @@ def get_arguments():
 def header():
     line_width = os.get_terminal_size().columns
     colour_bar = ''
-    colour_bar += f"{Style.BRIGHT}{Back.LIGHTBLUE_EX}{' ' * (line_width // 6)}{Style.RESET_ALL}"
-    colour_bar += f"{Style.DIM}{Back.WHITE}{' ' * (line_width // 6)}{Style.RESET_ALL}"
-    colour_bar += f"{Style.NORMAL}{Back.BLACK}{' ' * (line_width // 6)}{Style.RESET_ALL}"
-    colour_bar += f"{Style.NORMAL}{Back.MAGENTA}{' ' * (line_width // 6)}{Style.RESET_ALL}"
-    colour_bar += f"{Style.BRIGHT}{Back.WHITE}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+    colour_bar += f"{Style.BRIGHT}{Back.LIGHTBLUE_EX}{' ' * (line_width // 6)}"
+    colour_bar += f"{Style.DIM}{Back.WHITE}{' ' * (line_width // 6)}"
+    colour_bar += f"{Style.NORMAL}{Back.BLACK}{' ' * (line_width // 6)}"
+    colour_bar += f"{Style.NORMAL}{Back.MAGENTA}{' ' * (line_width // 6)}"
+    colour_bar += f"{Style.BRIGHT}{Back.WHITE}{' ' * (line_width // 6)}"
     colour_bar += f"{Style.BRIGHT}{Back.LIGHTYELLOW_EX}{' ' * (line_width // 6)}{Style.RESET_ALL}"
 
     print()

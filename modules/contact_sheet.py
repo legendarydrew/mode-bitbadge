@@ -9,9 +9,10 @@ class ContactSheet:
     _y: int = 0
     _canvas: Image = None
 
-    def __init__(self, items_across: int, items_down: int):
+    def __init__(self, items_across: int, items_down: int, title: str = None):
         self.items_across = items_across
         self.items_down = items_down
+        self.title = title or Config.SHEET_TITLE_TEXT
 
     def add(self, canvas: Grid):
         # If adding the first image, create a canvas measuring (across x width) by (down x height).
@@ -50,7 +51,7 @@ class ContactSheet:
             footer_fount = ImageFont.truetype(Config.SHEET_FOOTER_FOUNT, Config.SHEET_FOOTER_TEXT_SIZE)
 
             # Add the title.
-            draw_handle.text(text=Config.SHEET_TITLE_TEXT.replace('%u', str(number)).upper(),
+            draw_handle.text(text=self.title.replace('%u', str(number)).upper(),
                              font=title_fount,
                              fill=Config.SHEET_TITLE_TEXT_COLOUR,
                              spacing=0,

@@ -147,11 +147,11 @@ def main():
     else:
         # Generate contact sheets.
         gen = Generator(spaces=spaces, colours=args.colours)
+        gen.sheet_title = args.title
         gen.use_all_colours = args.use_all_colours
         gen.sheet_dimensions = (args.sheet_x, args.sheet_y)
 
         # TODO output folder.
-        # TODO contact sheet title.
         # TODO delete existing files.
 
         gen.run()

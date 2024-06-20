@@ -19,6 +19,7 @@ class Generator:
         '#F5CD2F',  # SilentMode Yellow
     ]
     use_all_colours = True
+    sheet_title: str = ''
     sheet_dimensions: tuple[int, int] = (12, 8)  # items across and down on contact sheets.
 
     # ---------------------------------------------------------
@@ -91,7 +92,9 @@ class Generator:
                                                          use_all_colours=self.use_all_colours)
 
         # Define the contact sheet.
-        self._sheet = ContactSheet(items_across=self.sheet_dimensions[0], items_down=self.sheet_dimensions[0])
+        self._sheet = ContactSheet(title=self.sheet_title,
+                                   items_across=self.sheet_dimensions[0],
+                                   items_down=self.sheet_dimensions[1])
         self._sheet_index = 0
 
         # Generate each permutation as an image, adding them to our contact sheet.

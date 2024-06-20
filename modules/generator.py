@@ -1,3 +1,5 @@
+import os
+import shutil
 import time
 
 from alive_progress import alive_bar
@@ -9,8 +11,8 @@ from modules.permutations import Permutations
 
 class Generator:
     # Settings here...
-    spaces = Base.TEST
-    colours = [
+    spaces: list[tuple[int, int]] = Base.TEST
+    colours: list[str] = [
         '#2B59C3',  # SilentMode Blue
         '#49506F',  # SilentMode Grey
         '#11151C',  # SilentMode Black
@@ -18,9 +20,11 @@ class Generator:
         '#F2F3F2',  # SilentMode White
         '#F5CD2F',  # SilentMode Yellow
     ]
-    use_all_colours = True
+    use_all_colours: bool = True
+    delete_existing_sheets: bool = False
     sheet_title: str = ''
     sheet_dimensions: tuple[int, int] = (12, 8)  # items across and down on contact sheets.
+    output_folder: str = './output'
 
     # ---------------------------------------------------------
 
@@ -80,6 +84,19 @@ class Generator:
             self.sheet_dimensions = (self.sheet_dimensions[0], self.sheet_dimensions[0])
         if self.sheet_dimensions[0] < 1 or self.sheet_dimensions[1] < 1:
             raise ValueError('Each sheet dimension must be >= 1.')
+        # TODO check whether the output folder exists.
+
+    def delete_sheets(self):
+        """
+        Delete any existing contact sheets if configured to.
+        https://stackoverflow.com/a/37215944/4073160
+        :return:
+        """
+        if self.delete_existing_sheets:
+            files = os.listdir(self.output_folder)
+            for file in files:
+                if 'sheet' in file:
+                    os.remove(f"{self.output_folder}/{file}")
 
     def run(self):
         """
@@ -90,6 +107,9 @@ class Generator:
         self._permutation_count = Permutations.calculate(space_count=self._space_count,
                                                          colour_count=self._colour_count,
                                                          use_all_colours=self.use_all_colours)
+
+        # Remove existing contact sheets if required.
+        self.delete_sheets()
 
         # Define the contact sheet.
         self._sheet = ContactSheet(title=self.sheet_title,
@@ -146,6 +166,6 @@ class Generator:
         :return:
         """
         next_sheet_index = self._sheet_index + 1
-        if self._sheet.save(f'output/sheet-{next_sheet_index}.png', number=next_sheet_index):
+        if self._sheet.save(f'{self.output_folder}/sheet-{next_sheet_index}.png', number=next_sheet_index):
             self._sheet.reset()
             self._sheet_index = next_sheet_index

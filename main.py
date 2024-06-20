@@ -60,9 +60,8 @@ def get_arguments():
                         type=str,
                         default="./output")
     parser.add_argument("--delete",
-                        help="Delete existing contact sheets.",
-                        type=int,
-                        default=False)
+                        action='store_true',
+                        help="Delete existing contact sheets.")
     return parser.parse_args()
 
 
@@ -132,27 +131,25 @@ def main():
 
     header()
 
+    colours = args.colours or Generator.colours
+
     if args.demo:
         # Generate a demonstration image.
         demo_filename = f"{args.folder}/demo.png"
-        colours = args.colours or Generator.colours
         demo_image(filename=demo_filename, spaces=spaces, colours=colours)
 
     elif args.only_perms:
         # Display the number of permutations for the specified base and colours.
-        colour_count = len(args.colours or Generator.colours)
-        space_count = len(spaces)
-        display_permutations(space_count=space_count, colour_count=colour_count)
+        display_permutations(space_count=len(spaces), colour_count=len(colours))
 
     else:
         # Generate contact sheets.
-        gen = Generator(spaces=spaces, colours=args.colours)
-        gen.sheet_title = args.title
+        gen = Generator(spaces=spaces, colours=colours)
         gen.use_all_colours = args.use_all_colours
+        gen.output_folder = args.folder
+        gen.sheet_title = args.title
         gen.sheet_dimensions = (args.sheet_x, args.sheet_y)
-
-        # TODO output folder.
-        # TODO delete existing files.
+        gen.delete_existing_sheets = args.delete
 
         gen.run()
 

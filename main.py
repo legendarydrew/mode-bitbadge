@@ -12,6 +12,7 @@
 import argparse
 from modules.generator import Generator
 from modules.base import Base
+from modules.permutations import Permutations
 
 
 def get_arguments():
@@ -39,9 +40,8 @@ def get_arguments():
                         help="Generate a demonstration image.",
                         type=str)
     parser.add_argument("-p", "--only-perms",
-                        help="Display the number of permutations.",
-                        type=int,
-                        default=False)
+                        action='store_true',
+                        help="Only display the number of permutations.")
     parser.add_argument("-sx", "--sheet-x",
                         help="Set the number of images across on contact sheets.",
                         type=int,
@@ -73,27 +73,34 @@ def main():
         case _:
             spaces = Base.TEST
 
-    colours = [
-        '#2B59C3',  # SilentMode Blue
-        '#49506F',  # SilentMode Grey
-        '#11151C',  # SilentMode Black
-        '#600587',  # SilentMode Purple
-        '#F2F3F2',  # SilentMode White
-        '#F5CD2F',  # SilentMode Yellow
-    ]
+    if args.demo:
+        # Generate a demonstration image.
+        pass
+    elif args.only_perms:
+        # Display the number of permutations for the specified base and colours.
+        colour_count = len(args.colours or Generator.colours)
+        space_count = len(spaces)
+        total_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
+                                                    use_all_colours=False)
+        inclusive_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
+                                                        use_all_colours=True)
+        print(
+            f"With {colour_count} colours and {space_count} spaces, there are {total_permutations:,} total permutations.")
+        print(
+            f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")
 
-    gen = Generator(spaces=spaces, colours=colours)
-    gen.use_all_colours = args.all_colours
-    gen.sheet_dimensions = (args.sheet_x, args.sheet_y)
+    else:
+        # Generate contact sheets.
+        gen = Generator(spaces=spaces, colours=args.colours)
+        gen.use_all_colours = args.use_all_colours
+        gen.sheet_dimensions = (args.sheet_x, args.sheet_y)
 
-    # TODO output folder.
-    # TODO contact sheet title.
-    # TODO display permutations.
-    # TODO define colours.
-    # TODO delete existing files.
-    # TODO generate a demo image.
+        # TODO output folder.
+        # TODO contact sheet title.
+        # TODO delete existing files.
+        # TODO generate a demo image.
 
-    gen.run()
+        gen.run()
 
 
 if __name__ == '__main__':

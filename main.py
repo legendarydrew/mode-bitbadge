@@ -10,7 +10,9 @@
 ==============================================================================
 """
 import argparse
-from colorama import init as colorama_init, Fore, Style
+import os
+
+from colorama import init as colorama_init, Fore, Back, Style, just_fix_windows_console
 from modules.generator import Generator
 from modules.base import Base
 from modules.permutations import Permutations
@@ -62,8 +64,27 @@ def get_arguments():
     return parser.parse_args()
 
 
+def header():
+    line_width = os.get_terminal_size().columns
+    colour_bar = ''
+    colour_bar += f"{Style.BRIGHT}{Back.LIGHTBLUE_EX}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+    colour_bar += f"{Style.DIM}{Back.WHITE}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+    colour_bar += f"{Style.NORMAL}{Back.BLACK}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+    colour_bar += f"{Style.NORMAL}{Back.MAGENTA}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+    colour_bar += f"{Style.BRIGHT}{Back.WHITE}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+    colour_bar += f"{Style.BRIGHT}{Back.LIGHTYELLOW_EX}{' ' * (line_width // 6)}{Style.RESET_ALL}"
+
+    print()
+    print(colour_bar)
+    print("BIT BADGE Permutations".center(line_width))
+    print("by Drew Maughan (SilentMode)".center(line_width))
+    print(colour_bar)
+    print()
+
+
 def main():
     colorama_init()
+    just_fix_windows_console()
     args = get_arguments()
 
     # Settings here...
@@ -74,6 +95,8 @@ def main():
             spaces = Base.ORIGINAL
         case _:
             spaces = Base.TEST
+
+    header()
 
     if args.demo:
         # Generate a demonstration image.
@@ -87,7 +110,7 @@ def main():
         inclusive_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
                                                         use_all_colours=True)
         print(f"With {Style.BRIGHT}{Fore.YELLOW}{colour_count}{Style.RESET_ALL} colours", end=' ')
-        print(f"{Style.BRIGHT}{Fore.CYAN}{space_count}{Style.RESET_ALL} spaces,", end=' ')
+        print(f"and {Style.BRIGHT}{Fore.CYAN}{space_count}{Style.RESET_ALL} spaces,", end=' ')
         print(f"there are {Style.BRIGHT}{Fore.GREEN}{total_permutations:,}{Style.RESET_ALL} total permutations.")
         print("Where all the colours have to be used at least once,", end=' ')
         print(f"there are {Style.BRIGHT}{Fore.GREEN}{inclusive_permutations:,}{Style.RESET_ALL} permutations.")

@@ -11,10 +11,12 @@
 """
 import argparse
 import os
+import random
 
 from colorama import init as colorama_init, Fore, Back, Style, just_fix_windows_console
 from modules.generator import Generator
 from modules.base import Base
+from modules.grid import Grid
 from modules.permutations import Permutations
 
 
@@ -40,8 +42,8 @@ def get_arguments():
                         type=str,
                         required=False)
     parser.add_argument("-d", "--demo",
-                        help="Generate a demonstration image.",
-                        type=str)
+                        action='store_true',
+                        help="Generate a demonstration image.")
     parser.add_argument("-p", "--only-perms",
                         action='store_true',
                         help="Only display the number of permutations.")
@@ -82,6 +84,38 @@ def header():
     print()
 
 
+def display_permutations(space_count, colour_count):
+    """
+    Display the total number of permutations for the provided values.
+    :param space_count:
+    :param colour_count:
+    :return:
+    """
+    total_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
+                                                use_all_colours=False)
+    inclusive_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
+                                                    use_all_colours=True)
+    print(f"With {Style.BRIGHT}{Fore.YELLOW}{colour_count}{Style.RESET_ALL} colours", end=' ')
+    print(f"and {Style.BRIGHT}{Fore.CYAN}{space_count}{Style.RESET_ALL} spaces,", end=' ')
+    print(f"there are {Style.BRIGHT}{Fore.GREEN}{total_permutations:,}{Style.RESET_ALL} total permutations.")
+    print("Where all the colours have to be used at least once,", end=' ')
+    print(f"there are {Style.BRIGHT}{Fore.GREEN}{inclusive_permutations:,}{Style.RESET_ALL} permutations.")
+
+
+def demo_image(filename, spaces, colours):
+    """
+    Generate and save a demonstration image of a single permutation.
+    :param filename: the image file to save.
+    :param spaces:
+    :param colours:
+    """
+    random_colours = [colours[int(random.random() * len(colours))] for _ in range(len(spaces))]
+    grid = Grid(spaces)
+    grid.draw(random_colours)
+    grid.image().save(filename)
+    print(f"A demonstration image was created at {filename}.")
+
+
 def main():
     colorama_init()
     just_fix_windows_console()
@@ -100,20 +134,15 @@ def main():
 
     if args.demo:
         # Generate a demonstration image.
-        pass
+        demo_filename = f"{args.folder}/demo.png"
+        colours = args.colours or Generator.colours
+        demo_image(filename=demo_filename, spaces=spaces, colours=colours)
+
     elif args.only_perms:
         # Display the number of permutations for the specified base and colours.
         colour_count = len(args.colours or Generator.colours)
         space_count = len(spaces)
-        total_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
-                                                    use_all_colours=False)
-        inclusive_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
-                                                        use_all_colours=True)
-        print(f"With {Style.BRIGHT}{Fore.YELLOW}{colour_count}{Style.RESET_ALL} colours", end=' ')
-        print(f"and {Style.BRIGHT}{Fore.CYAN}{space_count}{Style.RESET_ALL} spaces,", end=' ')
-        print(f"there are {Style.BRIGHT}{Fore.GREEN}{total_permutations:,}{Style.RESET_ALL} total permutations.")
-        print("Where all the colours have to be used at least once,", end=' ')
-        print(f"there are {Style.BRIGHT}{Fore.GREEN}{inclusive_permutations:,}{Style.RESET_ALL} permutations.")
+        display_permutations(space_count=space_count, colour_count=colour_count)
 
     else:
         # Generate contact sheets.
@@ -124,7 +153,6 @@ def main():
         # TODO output folder.
         # TODO contact sheet title.
         # TODO delete existing files.
-        # TODO generate a demo image.
 
         gen.run()
 

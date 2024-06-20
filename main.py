@@ -90,15 +90,19 @@ def display_permutations(space_count, colour_count):
     :param colour_count:
     :return:
     """
-    total_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
+    total_permutations = Permutations.calculate(space_count=space_count,
+                                                colour_count=colour_count,
                                                 use_all_colours=False)
-    inclusive_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
+    inclusive_permutations = Permutations.calculate(space_count=space_count,
+                                                    colour_count=colour_count,
                                                     use_all_colours=True)
     print(f"With {Style.BRIGHT}{Fore.YELLOW}{colour_count}{Style.RESET_ALL} colours", end=' ')
     print(f"and {Style.BRIGHT}{Fore.CYAN}{space_count}{Style.RESET_ALL} spaces,", end=' ')
-    print(f"there are {Style.BRIGHT}{Fore.GREEN}{total_permutations:,}{Style.RESET_ALL} total permutations.")
+    print(f"there are {Style.BRIGHT}{Fore.GREEN}{total_permutations:,}{Style.RESET_ALL}"
+          f" total permutations.")
     print("Where all the colours have to be used at least once,", end=' ')
-    print(f"there are {Style.BRIGHT}{Fore.GREEN}{inclusive_permutations:,}{Style.RESET_ALL} permutations.")
+    print(f"there are {Style.BRIGHT}{Fore.GREEN}{inclusive_permutations:,}{Style.RESET_ALL}"
+          f" permutations.")
 
 
 def demo_image(filename, spaces, colours):

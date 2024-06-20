@@ -19,7 +19,9 @@ class ContactSheet:
         image = canvas.image()
         if self._canvas is None:
             canvas_width = self.items_across * image.width
-            canvas_height = self.items_down * image.height + Config.SHEET_TITLE_HEIGHT + Config.SHEET_FOOTER_HEIGHT
+            canvas_height = (self.items_down * image.height +
+                             Config.SHEET_TITLE_HEIGHT +
+                             Config.SHEET_FOOTER_HEIGHT)
             self._canvas = Image.new(mode='RGBA',
                                      size=(canvas_width, canvas_height),
                                      color=Config.SHEET_BG_COLOUR)
@@ -36,7 +38,9 @@ class ContactSheet:
         Returns True if the contact sheet is "full" of images.
         :return:
         """
-        return self._y >= self._canvas.height - Config.SHEET_TITLE_HEIGHT - Config.SHEET_FOOTER_HEIGHT
+        return (self._y >= self._canvas.height -
+                Config.SHEET_TITLE_HEIGHT -
+                Config.SHEET_FOOTER_HEIGHT)
 
     def save(self, filename: str, number: int):
         """
@@ -47,8 +51,10 @@ class ContactSheet:
         """
         if self._canvas is not None:
             draw_handle = ImageDraw.Draw(self._canvas)
-            title_fount = ImageFont.truetype(Config.SHEET_TITLE_FOUNT, Config.SHEET_TITLE_TEXT_SIZE)
-            footer_fount = ImageFont.truetype(Config.SHEET_FOOTER_FOUNT, Config.SHEET_FOOTER_TEXT_SIZE)
+            title_fount = ImageFont.truetype(Config.SHEET_TITLE_FOUNT,
+                                             Config.SHEET_TITLE_TEXT_SIZE)
+            footer_fount = ImageFont.truetype(Config.SHEET_FOOTER_FOUNT,
+                                              Config.SHEET_FOOTER_TEXT_SIZE)
 
             # Add the title.
             draw_handle.text(text=self.title.replace('%u', str(number)).upper(),
@@ -62,7 +68,8 @@ class ContactSheet:
             draw_handle.text(text=Config.SHEET_FOOTER_TEXT,
                              font=footer_fount,
                              fill=Config.SHEET_FOOTER_TEXT_COLOUR,
-                             xy=(self._canvas.width / 2, self._canvas.height - (Config.SHEET_FOOTER_HEIGHT / 2)),
+                             xy=(self._canvas.width / 2,
+                                 self._canvas.height - (Config.SHEET_FOOTER_HEIGHT / 2)),
                              anchor='mm')
 
             self._canvas.save(filename)

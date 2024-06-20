@@ -1,5 +1,4 @@
 import os
-import shutil
 import time
 
 from alive_progress import alive_bar
@@ -167,6 +166,7 @@ class Generator:
         :return:
         """
         next_sheet_index = self._sheet_index + 1
-        if self._sheet.save(f'{self.output_folder}/sheet-{next_sheet_index}.png', number=next_sheet_index):
+        sheet_filename = f'{self.output_folder}/sheet-{next_sheet_index}.png'
+        if self._sheet.save(filename=sheet_filename, number=next_sheet_index):
             self._sheet.reset()
             self._sheet_index = next_sheet_index

@@ -13,7 +13,10 @@ class Hexagon:
         self.y = y
         self.side_length = side_length
 
-    def draw(self, draw_handle, fill_colour: str = '#383838', edge_colour: str = '#141414', edge_width: int = 3):
+    def draw(self, draw_handle,
+             fill_colour: str = '#383838',
+             edge_colour: str = '#141414',
+             edge_width: int = 3):
         """
         Draws the hexagon.
         """

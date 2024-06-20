@@ -5,7 +5,7 @@ class Base:
 
     """
     Here's how we're defining the hexagonal grid:
-    
+
        0 1 2 3 4         0 1 2 3 4
     ------------      ------------
      0 - - x - -       0 - - x - -

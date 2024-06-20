@@ -55,7 +55,9 @@ class Grid:
         self.hexagons_across = max(1, max_x - min_x + 1)
         self.hexagons_down = max(1, int(max_y - min_y / 2) + 1)
         self.width = int(
-            (self.hexagons_across * Config.HEXAGON_SIDE_LENGTH) + ((self.hexagons_across + 1) * hex_dimensions.point))
+            (self.hexagons_across * Config.HEXAGON_SIDE_LENGTH) +
+            ((self.hexagons_across + 1) * hex_dimensions.point)
+        )
         self.height = int((self.hexagons_down + 1) * hex_dimensions.increment['y'])
 
         # Add the margin to the canvas dimensions.
@@ -70,7 +72,9 @@ class Grid:
         ] for c in coordinates]
 
         # Create the Hexagon objects.
-        self.hexagons = tuple([Hexagon(c[0], c[1], Config.HEXAGON_SIDE_LENGTH) for c in coordinates])
+        self.hexagons = tuple([
+            Hexagon(c[0], c[1], Config.HEXAGON_SIDE_LENGTH) for c in coordinates
+        ])
 
     def _create_canvas(self):
         self._im = Image.new(mode='RGBA',

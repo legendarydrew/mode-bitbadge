@@ -16,3 +16,6 @@ DOTS.
     - an option to render a demo image (for checking the configuration).
     - optionally delete existing generated content.
 - generating a video of permutations (á la [mode-dotperms](https://github.com/legendarydrew/mode-dotperms)).
+
+## A "sadistic" mathematical challenge
+How many individual cells would you have to produce for each colour, if you were going to physically create every single permutation?

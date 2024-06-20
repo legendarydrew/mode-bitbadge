@@ -10,6 +10,7 @@
 ==============================================================================
 """
 import argparse
+from colorama import init as colorama_init, Fore, Style
 from modules.generator import Generator
 from modules.base import Base
 from modules.permutations import Permutations
@@ -62,6 +63,7 @@ def get_arguments():
 
 
 def main():
+    colorama_init()
     args = get_arguments()
 
     # Settings here...
@@ -84,10 +86,11 @@ def main():
                                                     use_all_colours=False)
         inclusive_permutations = Permutations.calculate(space_count=space_count, colour_count=colour_count,
                                                         use_all_colours=True)
-        print(
-            f"With {colour_count} colours and {space_count} spaces, there are {total_permutations:,} total permutations.")
-        print(
-            f"Where all the colours have to be used at least once, there are {inclusive_permutations:,} permutations.")
+        print(f"With {Style.BRIGHT}{Fore.YELLOW}{colour_count}{Style.RESET_ALL} colours", end=' ')
+        print(f"{Style.BRIGHT}{Fore.CYAN}{space_count}{Style.RESET_ALL} spaces,", end=' ')
+        print(f"there are {Style.BRIGHT}{Fore.GREEN}{total_permutations:,}{Style.RESET_ALL} total permutations.")
+        print("Where all the colours have to be used at least once,", end=' ')
+        print(f"there are {Style.BRIGHT}{Fore.GREEN}{inclusive_permutations:,}{Style.RESET_ALL} permutations.")
 
     else:
         # Generate contact sheets.
